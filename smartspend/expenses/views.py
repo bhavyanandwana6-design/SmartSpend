@@ -69,7 +69,8 @@ def dashboard(request):
         }
         tip = tips.get(top_category, 'Try to save at least 20% of your monthly income.')
         ai_insight = f"Your highest spending is on {top_category} — ₹{round(top_amount, 2)} ({top_percent}% of total). 💡 Tip: {tip}"
-        remaining = float(budget.monthly_limit) - float(total) if budget.monthly_limit else 0
+        
+    remaining = float(budget.monthly_limit) - float(total) if budget.monthly_limit else 0
 
     return render(request, 'dashboard.html', {
         'expenses': expenses,

@@ -2,10 +2,11 @@
 <html>
 <head>
   <title>SmartSpend - Register</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: 'Segoe UI', sans-serif; min-height: 100vh; display: flex; justify-content: center; align-items: center; background: #eef2ff; background-image: radial-gradient(#c7d2fe 1px, transparent 1px); background-size: 25px 25px; }
-    .box { background: white; padding: 45px 40px; border-radius: 16px; box-shadow: 0 8px 30px rgba(99,102,241,0.12); width: 340px; }
+    body { font-family: 'Segoe UI', sans-serif; min-height: 100vh; display: flex; justify-content: center; align-items: center; background: #eef2ff; background-image: radial-gradient(#c7d2fe 1px, transparent 1px); background-size: 25px 25px; padding: 16px; }
+    .box { background: white; padding: 40px 32px; border-radius: 16px; box-shadow: 0 8px 30px rgba(99,102,241,0.12); width: 100%; max-width: 340px; }
     .logo { text-align: center; font-size: 26px; font-weight: 700; color: #4f46e5; margin-bottom: 6px; }
     .tagline { text-align: center; color: #888; font-size: 13px; margin-bottom: 28px; }
     label { font-size: 12px; color: #555; font-weight: 600; display: block; margin: 12px 0 5px; letter-spacing: 0.5px; }
@@ -15,6 +16,10 @@
     button:hover { background: #4338ca; }
     .error { color: #e74c3c; font-size: 13px; text-align: center; margin-top: 10px; }
     a { display: block; text-align: center; margin-top: 14px; color: #4f46e5; text-decoration: none; font-size: 13px; }
+    @media (max-width: 480px) {
+      .box { padding: 28px 20px; }
+      .logo { font-size: 22px; }
+    }
   </style>
 </head>
 <body>
@@ -24,9 +29,9 @@
     <form method="POST">
       {% csrf_token %}
       <label>USERNAME</label>
-      <input type="text" name="username" placeholder="Choose a username" required>
+      <input type="text" name="username" placeholder="Choose a username" required autocomplete="username">
       <label>PASSWORD</label>
-      <input type="password" name="password" placeholder="Choose a password" required>
+      <input type="password" name="password" placeholder="Choose a password" required autocomplete="new-password">
       <button type="submit">Register →</button>
     </form>
     {% if error %}

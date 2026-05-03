@@ -1,6 +1,7 @@
 \# 💰 SmartSpend – AI Based Personal Expense Tracker
 
-
+## 🌐 Live Demo
+👉 [SmartSpend Live](https://smartspend-i49p.onrender.com/login/)
 
 A web-based personal expense tracking application built with Django (Python).
 

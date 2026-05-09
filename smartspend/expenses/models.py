@@ -18,3 +18,15 @@ class Budget(models.Model):
 
     def __str__(self):
         return f"{self.user.username}'s budget"
+
+class UserProfile(models.Model):
+    STATUS_CHOICES = [
+        ('pending', 'Pending'),
+        ('approved', 'Approved'),
+        ('declined', 'Declined'),
+    ]
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='pending')
+
+    def __str__(self):
+        return f"{self.user.username} - {self.status}"

@@ -14,7 +14,7 @@
     input:focus, select:focus, textarea:focus { outline: none; border-color: #4f46e5; box-shadow: 0 0 0 3px rgba(79,70,229,0.1); }
     button { width: 100%; padding: 12px; background: #4f46e5; color: white; border: none; border-radius: 9px; cursor: pointer; font-size: 15px; font-weight: 600; margin-top: 20px; }
     button:hover { background: #4338ca; }
-    a { display: block; text-align: center; margin-top: 14px; color: #4f46e5; text-decoration: none; font-size: 13px; }
+    .back-link { display: block; text-align: center; margin-top: 14px; color: #4f46e5; text-decoration: none; font-size: 13px; }
     @media (max-width: 480px) {
       .box { padding: 28px 20px; }
       .logo { font-size: 20px; }
@@ -25,28 +25,45 @@
   <div class="box">
     <div class="logo">💰 SmartSpend</div>
     <div class="tagline">Add a new expense</div>
-    <form method="POST">
-      {% csrf_token %}
-      <label>TITLE</label>
-      <input type="text" name="title" placeholder="e.g. Lunch, Bus fare" required>
-      <label>AMOUNT (₹)</label>
-      <input type="number" name="amount" placeholder="Enter amount" step="0.01" required>
-      <label>CATEGORY</label>
-      <select name="category">
-        <option>Food</option>
-        <option>Travel</option>
-        <option>Education</option>
-        <option>Bills</option>
-        <option>Entertainment</option>
-        <option>Other</option>
-      </select>
-      <label>DATE</label>
-      <input type="date" name="date" required>
-      <label>NOTE (OPTIONAL)</label>
-      <textarea name="note" placeholder="Any extra detail..." rows="3"></textarea>
-      <button type="submit">Add Expense →</button>
-    </form>
-    <a href="/">← Back to Dashboard</a>
+
+    {% if budget_exceeded %}
+      <div style="background:#fadbd8; border-left:5px solid #e74c3c; padding:15px; border-radius:10px; margin-bottom:20px; text-align:center;">
+        <p style="color:#922b21; font-weight:700; font-size:15px;">🚨 Budget Exceeded!</p>
+        <p style="color:#922b21; font-size:13px; margin-top:6px;">You have spent ₹{{ total }} out of ₹{{ budget.monthly_limit }} budget.</p>
+        <a href="/#budget-section" style="display:inline-block; margin-top:12px; background:#4f46e5; color:white; padding:9px 20px; border-radius:9px; text-decoration:none; font-weight:600;">💰 Update Budget</a>
+      </div>
+    {% else %}
+      <form method="POST">
+        {% csrf_token %}
+        <label>TITLE</label>
+        <input type="text" name="title" placeholder="e.g. Lunch, Bus fare" required>
+        <label>AMOUNT (₹)</label>
+        <input type="number" name="amount" placeholder="Enter amount" step="0.01" required>
+        <label>CATEGORY</label>
+        <select name="category">
+          <option>Food</option>
+          <option>Travel</option>
+          <option>Education</option>
+          <option>Bills</option>
+          <option>Entertainment</option>
+          <option>Other</option>
+        </select>
+        <label>DATE</label>
+        <input type="date" name="date" id="dateInput" required>
+        <script>
+          const today = new Date();
+          const yyyy = today.getFullYear();
+          const mm = String(today.getMonth() + 1).padStart(2, '0');
+          const dd = String(today.getDate()).padStart(2, '0');
+          document.getElementById('dateInput').value = yyyy + '-' + mm + '-' + dd;
+        </script>
+        <label>NOTE (OPTIONAL)</label>
+        <textarea name="note" placeholder="Any extra detail..." rows="3"></textarea>
+        <button type="submit">Add Expense →</button>
+      </form>
+      <a class="back-link" href="/">← Back to Dashboard</a>
+    {% endif %}
+
   </div>
 </body>
 </html>

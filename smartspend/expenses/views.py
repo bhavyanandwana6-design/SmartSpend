@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from .models import Expense, Budget
+from .models import Expense, Budget, UserProfile
 
 def login_view(request):
     error = ''
@@ -27,8 +27,10 @@ def register_view(request):
             error = 'Username already taken'
         else:
             user = User.objects.create_user(username=username, password=password)
-            login(request, user)
-            return redirect('dashboard')
+            user.is_active = False
+            user.save()
+            UserProfile.objects.create(user=user, status='pending')
+            return render(request, 'register.html', {'pending': True})
     return render(request, 'register.html', {'error': error})
 
 @login_required
@@ -49,7 +51,6 @@ def dashboard(request):
         elif percent >= 80:
             budget_alert = 'warning'
 
-    # AI Smart Insight
     ai_insight = ''
     if expenses:
         category_totals = {}
@@ -69,7 +70,7 @@ def dashboard(request):
         }
         tip = tips.get(top_category, 'Try to save at least 20% of your monthly income.')
         ai_insight = f"Your highest spending is on {top_category} — ₹{round(top_amount, 2)} ({top_percent}% of total). 💡 Tip: {tip}"
-        
+
     remaining = float(budget.monthly_limit) - float(total) if budget.monthly_limit else 0
 
     return render(request, 'dashboard.html', {
@@ -83,7 +84,36 @@ def dashboard(request):
 
 @login_required
 def add_expense(request):
+    budget, _ = Budget.objects.get_or_create(user=request.user)
+    expenses = Expense.objects.filter(user=request.user)
+    total = sum(e.amount for e in expenses)
+
+    budget_exceeded = False
+    budget_limit = None
+    if budget.monthly_limit:
+        try:
+            budget_limit = float(budget.monthly_limit)
+        except (TypeError, ValueError):
+            budget_limit = None
+        if budget_limit is not None and budget_limit > 0:
+            if float(total) >= budget_limit:
+                budget_exceeded = True
+
     if request.method == 'POST':
+        try:
+            new_amount = float(request.POST.get('amount', 0))
+        except (TypeError, ValueError):
+            new_amount = 0
+
+        if budget_limit is not None and budget_limit > 0 and (float(total) + new_amount) > budget_limit:
+            budget_exceeded = True
+
+        if budget_exceeded:
+            return render(request, 'add_expense.html', {
+                'budget_exceeded': True,
+                'budget': budget,
+                'total': total
+            })
         Expense.objects.create(
             user=request.user,
             title=request.POST['title'],
@@ -93,7 +123,12 @@ def add_expense(request):
             note=request.POST.get('note', '')
         )
         return redirect('dashboard')
-    return render(request, 'add_expense.html')
+
+    return render(request, 'add_expense.html', {
+        'budget_exceeded': budget_exceeded,
+        'budget': budget,
+        'total': total
+    })
 
 def logout_view(request):
     logout(request)
@@ -124,8 +159,7 @@ def ai_summary(request):
     if not expenses:
         summary = "No expenses found. Add some expenses first!"
         return render(request, 'ai_summary.html', {'summary': summary})
-    
-    # Category wise total
+
     category_totals = {}
     for e in expenses:
         cat = e.category
@@ -133,13 +167,12 @@ def ai_summary(request):
             category_totals[cat] += float(e.amount)
         else:
             category_totals[cat] = float(e.amount)
-    
+
     total = sum(category_totals.values())
     top_category = max(category_totals, key=category_totals.get)
     top_amount = category_totals[top_category]
     top_percent = round((top_amount / total) * 100)
-    
-    # Tips based on category
+
     tips = {
         'Food': 'Try cooking at home more often to reduce food expenses.',
         'Travel': 'Consider using public transport or carpooling to save on travel costs.',
@@ -149,7 +182,7 @@ def ai_summary(request):
         'Other': 'Track miscellaneous expenses carefully to identify patterns.',
     }
     tip = tips.get(top_category, 'Try to save at least 20% of your monthly income.')
-    
+
     summary = f"""📊 Spending Analysis for {request.user.username.capitalize()}:
 
 You have recorded {expenses.count()} expenses with a total spending of ₹{round(total, 2)}.
@@ -161,7 +194,7 @@ You have recorded {expenses.count()} expenses with a total spending of ₹{round
     for cat, amt in category_totals.items():
         percent = round((amt / total) * 100)
         summary += f"• {cat}: ₹{round(amt, 2)} ({percent}%)\n"
-    
+
     summary += f"\n💡 Smart Tip: {tip}"
-    
+
     return render(request, 'ai_summary.html', {'summary': summary})

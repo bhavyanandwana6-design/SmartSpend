@@ -40,7 +40,7 @@
         <option {% if expense.category == 'Other' %}selected{% endif %}>Other</option>
       </select>
       <label>DATE</label>
-      <input type="date" name="date" value="{{ expense.date }}" required>
+      <input type="date" name="date" id="editDate" value="{{ expense.date|date:'Y-m-d' }}" required>
       <label>NOTE (OPTIONAL)</label>
       <textarea name="note" rows="3">{{ expense.note }}</textarea>
       <button type="submit">Save Changes →</button>

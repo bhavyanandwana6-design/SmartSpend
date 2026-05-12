@@ -12,4 +12,5 @@ urlpatterns = [
     path('edit/<int:id>/', views.edit_expense, name='edit_expense'),
     path('ai-summary/', views.ai_summary, name='ai_summary'),
     path('delete/<int:id>/', views.delete_expense, name='delete_expense'),
+    path('manage/', views.manage_panel, name='manage_panel'),  #yeh change kiya hai
 ]

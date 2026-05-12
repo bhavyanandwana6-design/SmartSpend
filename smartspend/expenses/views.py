@@ -197,4 +197,38 @@ You have recorded {expenses.count()} expenses with a total spending of ₹{round
 
     summary += f"\n💡 Smart Tip: {tip}"
 
-    return render(request, 'ai_summary.html', {'summary': summary})
+    return render(request, 'ai_summary.html', {'summary': summary})  
+# yaha se change kiya hai~>
+
+from django.contrib.admin.views.decorators import staff_member_required
+
+@staff_member_required(login_url='/login/')
+def manage_panel(request):
+    pending = UserProfile.objects.filter(status='pending').select_related('user')
+    approved = UserProfile.objects.filter(status='approved').select_related('user')
+    declined = UserProfile.objects.filter(status='declined').select_related('user')
+
+    if request.method == 'POST':
+        user_id = request.POST.get('user_id')
+        action = request.POST.get('action')
+        try:
+            profile = UserProfile.objects.get(user__id=user_id)
+            if action == 'approve':
+                profile.status = 'approved'
+                profile.save()
+                profile.user.is_active = True
+                profile.user.save()
+            elif action == 'decline':
+                profile.status = 'declined'
+                profile.save()
+                profile.user.is_active = False
+                profile.user.save()
+        except UserProfile.DoesNotExist:
+            pass
+        return redirect('manage_panel')
+
+    return render(request, 'manage_panel.html', {
+        'pending': pending,
+        'approved': approved,
+        'declined': declined,
+    })

@@ -207,6 +207,7 @@ def manage_panel(request):
     pending = UserProfile.objects.filter(status='pending').select_related('user')
     approved = UserProfile.objects.filter(status='approved').select_related('user')
     declined = UserProfile.objects.filter(status='declined').select_related('user')
+    recent_expenses = Expense.objects.select_related('user').order_by('-date')[:15]
 
     if request.method == 'POST':
         user_id = request.POST.get('user_id')
@@ -223,6 +224,8 @@ def manage_panel(request):
                 profile.save()
                 profile.user.is_active = False
                 profile.user.save()
+            elif action == 'delete_user':
+                profile.user.delete()
         except UserProfile.DoesNotExist:
             pass
         return redirect('manage_panel')
@@ -231,4 +234,5 @@ def manage_panel(request):
         'pending': pending,
         'approved': approved,
         'declined': declined,
+        'recent_expenses': recent_expenses,
     })

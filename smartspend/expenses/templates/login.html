@@ -29,14 +29,18 @@
     label { font-size: 12px; color: #555; font-weight: 600; display: block; margin: 12px 0 5px; letter-spacing: 0.5px; }
     input { width: 100%; padding: 11px 14px; border: 1.5px solid #e0e0e0; border-radius: 9px; font-size: 14px; color: #333; transition: 0.2s; }
     input:focus { outline: none; border-color: #4f46e5; box-shadow: 0 0 0 3px rgba(79,70,229,0.1); }
-    button { width: 100%; padding: 12px; background: #4f46e5; color: white; border: none; border-radius: 9px; cursor: pointer; font-size: 15px; font-weight: 600; margin-top: 20px; letter-spacing: 0.3px; }
-    button:hover { background: #4338ca; }
+    .password-wrapper { position: relative; }
+    .password-wrapper input { padding-right: 44px; }
+    .eye-btn { position: absolute; right: 13px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; font-size: 17px; padding: 0; margin: 0; width: auto; color: #888; }
+    .eye-btn:hover { background: none; color: #4f46e5; }
+    button[type="submit"] { width: 100%; padding: 12px; background: #4f46e5; color: white; border: none; border-radius: 9px; cursor: pointer; font-size: 15px; font-weight: 600; margin-top: 20px; letter-spacing: 0.3px; }
+    button[type="submit"]:hover { background: #4338ca; }
     .register-link { display: block; text-align: center; margin-top: 16px; font-size: 13px; color: #4f46e5; text-decoration: none; }
     .register-link:hover { text-decoration: underline; }
     @media (max-width: 480px) {
       .box { padding: 32px 24px; }
       .logo { font-size: 22px; }
-      button { font-size: 14px; padding: 11px; }
+      button[type="submit"] { font-size: 14px; padding: 11px; }
     }
   </style>
 </head>
@@ -49,10 +53,20 @@
       <label>USERNAME</label>
       <input type="text" name="username" placeholder="Enter username" required autocomplete="username">
       <label>PASSWORD</label>
-      <input type="password" name="password" placeholder="Enter password" required autocomplete="current-password">
+      <div class="password-wrapper">
+        <input type="password" name="password" id="passwordInput" placeholder="Enter password" required autocomplete="current-password">
+        <button type="button" class="eye-btn" onclick="togglePassword()" title="Show/Hide password">👁️</button>
+      </div>
       <button type="submit">Login →</button>
     </form>
     <a class="register-link" href="/register/">New user? Register here</a>
   </div>
+
+  <script>
+    function togglePassword() {
+      const input = document.getElementById('passwordInput');
+      input.type = input.type === 'password' ? 'text' : 'password';
+    }
+  </script>
 </body>
 </html>

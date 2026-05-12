@@ -39,7 +39,10 @@
     .bills { background: #fadbd8; color: #e74c3c; }
     .entertainment { background: #d7bde2; color: #8e44ad; }
     .other { background: #eaf2ff; color: #3498db; }
-    .del-btn { color: #e74c3c; text-decoration: none; font-size: 13px; font-weight: 600; }
+
+    .action-btn { display: inline-flex; flex-direction: column; align-items: center; text-decoration: none; font-size: 11px; font-weight: 600; gap: 2px; }
+    .action-btn.edit { color: #4f46e5; margin-right: 12px; }
+    .action-btn.delete { color: #e74c3c; background: none; border: none; cursor: pointer; font-family: inherit; padding: 0; }
 
     .alert-warning { background: #fff3cd; border-left: 5px solid #f39c12; padding: 12px 16px; border-radius: 10px; margin-bottom: 16px; color: #856404; font-weight: 600; font-size: 14px; }
     .alert-critical { background: #fde8d8; border-left: 5px solid #e67e22; padding: 12px 16px; border-radius: 10px; margin-bottom: 16px; color: #784212; font-weight: 600; font-size: 14px; }
@@ -50,6 +53,18 @@
     .budget-form button { padding: 9px 20px; background: #4f46e5; color: white; border: none; border-radius: 9px; cursor: pointer; font-weight: 600; white-space: nowrap; }
 
     .scroll-hint { display: none; text-align: center; color: #888; font-size: 12px; margin-bottom: 8px; }
+
+    /* Confirmation Modal */
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 1000; justify-content: center; align-items: center; }
+    .modal-overlay.active { display: flex; }
+    .modal { background: white; border-radius: 16px; padding: 30px 28px; width: 90%; max-width: 360px; text-align: center; box-shadow: 0 10px 40px rgba(0,0,0,0.15); }
+    .modal h3 { color: #2c3e50; font-size: 18px; margin-bottom: 10px; }
+    .modal p { color: #666; font-size: 14px; margin-bottom: 24px; line-height: 1.6; }
+    .modal-buttons { display: flex; gap: 12px; justify-content: center; }
+    .modal-btn-cancel { padding: 10px 24px; border-radius: 9px; border: 1.5px solid #ddd; background: white; color: #555; font-size: 14px; font-weight: 600; cursor: pointer; }
+    .modal-btn-delete { padding: 10px 24px; border-radius: 9px; border: none; background: #e74c3c; color: white; font-size: 14px; font-weight: 600; cursor: pointer; text-decoration: none; }
+    .modal-btn-cancel:hover { background: #f5f5f5; }
+    .modal-btn-delete:hover { background: #c0392b; }
 
     @media (max-width: 600px) {
       .navbar h2 { font-size: 18px; }
@@ -62,6 +77,19 @@
   </style>
 </head>
 <body>
+
+  <!-- Delete Confirmation Modal -->
+  <div class="modal-overlay" id="deleteModal">
+    <div class="modal">
+      <h3>🗑️ Delete Expense</h3>
+      <p>Are you sure you want to delete this expense? This action cannot be undone.</p>
+      <div class="modal-buttons">
+        <button class="modal-btn-cancel" onclick="closeModal()">Cancel</button>
+        <a href="#" class="modal-btn-delete" id="confirmDeleteBtn">Yes, Delete</a>
+      </div>
+    </div>
+  </div>
+
   <div class="navbar">
     <h2>💰 SmartSpend</h2>
     <div>
@@ -109,7 +137,7 @@
         {% if remaining >= 0 %}
           <span style="color:#2ecc71; font-weight:600;">₹{{ remaining }}</span>
         {% else %}
-          <span style="color:#e74c3c; font-weight:600;">Budget exceed ho gaya!</span>
+          <span style="color:#e74c3c; font-weight:600;">Budget exceeded!</span>
         {% endif %}
       </p>
       {% endif %}
@@ -140,8 +168,14 @@
             <td><span class="badge {{ e.category|lower }}">{{ e.category }}</span></td>
             <td>{{ e.date }}</td>
             <td>
-              <a href="/edit/{{ e.id }}/" style="color:#4f46e5; text-decoration:none; font-size:13px; font-weight:600; margin-right:8px;">✏️</a>
-              <a href="/delete/{{ e.id }}/" class="del-btn">🗑</a>
+              <a href="/edit/{{ e.id }}/" class="action-btn edit">
+                ✏️
+                <span>Edit</span>
+              </a>
+              <button class="action-btn delete" onclick="openModal('/delete/{{ e.id }}/')">
+                🗑️
+                <span>Delete</span>
+              </button>
             </td>
           </tr>
           {% endfor %}
@@ -151,6 +185,7 @@
   </div>
 
   <script>
+    // Chart
     const ctx = document.getElementById('myChart');
     new Chart(ctx, {
       type: 'bar',
@@ -171,6 +206,21 @@
           y: { ticks: { color: '#555' }, grid: { color: '#f0f0f0' } }
         }
       }
+    });
+
+    // Delete Modal
+    function openModal(deleteUrl) {
+      document.getElementById('confirmDeleteBtn').href = deleteUrl;
+      document.getElementById('deleteModal').classList.add('active');
+    }
+
+    function closeModal() {
+      document.getElementById('deleteModal').classList.remove('active');
+    }
+
+    // Close modal on outside click
+    document.getElementById('deleteModal').addEventListener('click', function(e) {
+      if (e.target === this) closeModal();
     });
   </script>
 </body>

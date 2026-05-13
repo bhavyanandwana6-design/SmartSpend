@@ -3,6 +3,7 @@ from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from .models import Expense, Budget, UserProfile
+from decimal import Decimal, InvalidOperation
 
 def login_view(request):
     error = ''
@@ -33,17 +34,23 @@ def register_view(request):
             return render(request, 'register.html', {'pending': True})
     return render(request, 'register.html', {'error': error})
 
+def safe_decimal(value):
+    try:
+        return Decimal(str(value))
+    except (InvalidOperation, TypeError, ValueError):
+        return Decimal('0.00')
+
 @login_required
 def dashboard(request):
     expenses = Expense.objects.filter(user=request.user)
-    total = sum(e.amount for e in expenses)
+    total = sum(safe_decimal(e.amount) for e in expenses) or Decimal('0.00')
     budget, _ = Budget.objects.get_or_create(user=request.user)
     if request.method == 'POST':
         budget.monthly_limit = request.POST['monthly_limit']
         budget.save()
     budget_alert = ''
-    if budget.monthly_limit and float(budget.monthly_limit) > 0:
-        percent = (float(total) / float(budget.monthly_limit)) * 100
+    if budget.monthly_limit and safe_decimal(budget.monthly_limit) > 0:
+        percent = (total / safe_decimal(budget.monthly_limit)) * 100
         if percent >= 100:
             budget_alert = 'danger'
         elif percent >= 90:
@@ -56,10 +63,10 @@ def dashboard(request):
         category_totals = {}
         for e in expenses:
             cat = e.category
-            category_totals[cat] = category_totals.get(cat, 0) + float(e.amount)
+            category_totals[cat] = category_totals.get(cat, Decimal('0.00')) + safe_decimal(e.amount)
         top_category = max(category_totals, key=category_totals.get)
         top_amount = category_totals[top_category]
-        top_percent = round((top_amount / float(total)) * 100)
+        top_percent = round((top_amount / total) * 100) if total > 0 else 0
         tips = {
             'Food': 'Try cooking at home more often to save money.',
             'Travel': 'Consider public transport or carpooling to cut travel costs.',
@@ -71,7 +78,7 @@ def dashboard(request):
         tip = tips.get(top_category, 'Try to save at least 20% of your monthly income.')
         ai_insight = f"Your highest spending is on {top_category} — ₹{round(top_amount, 2)} ({top_percent}% of total). 💡 Tip: {tip}"
 
-    remaining = float(budget.monthly_limit) - float(total) if budget.monthly_limit else 0
+    remaining = safe_decimal(budget.monthly_limit) - total if budget.monthly_limit else Decimal('0.00')
 
     return render(request, 'dashboard.html', {
         'expenses': expenses,
@@ -86,26 +93,20 @@ def dashboard(request):
 def add_expense(request):
     budget, _ = Budget.objects.get_or_create(user=request.user)
     expenses = Expense.objects.filter(user=request.user)
-    total = sum(e.amount for e in expenses)
+    total = sum(safe_decimal(e.amount) for e in expenses) or Decimal('0.00')
 
     budget_exceeded = False
     budget_limit = None
     if budget.monthly_limit:
-        try:
-            budget_limit = float(budget.monthly_limit)
-        except (TypeError, ValueError):
-            budget_limit = None
-        if budget_limit is not None and budget_limit > 0:
-            if float(total) >= budget_limit:
+        budget_limit = safe_decimal(budget.monthly_limit)
+        if budget_limit > 0:
+            if total >= budget_limit:
                 budget_exceeded = True
 
     if request.method == 'POST':
-        try:
-            new_amount = float(request.POST.get('amount', 0))
-        except (TypeError, ValueError):
-            new_amount = 0
+        new_amount = safe_decimal(request.POST.get('amount', 0))
 
-        if budget_limit is not None and budget_limit > 0 and (float(total) + new_amount) > budget_limit:
+        if budget_limit is not None and budget_limit > 0 and (total + new_amount) > budget_limit:
             budget_exceeded = True
 
         if budget_exceeded:
@@ -164,14 +165,14 @@ def ai_summary(request):
     for e in expenses:
         cat = e.category
         if cat in category_totals:
-            category_totals[cat] += float(e.amount)
+            category_totals[cat] += safe_decimal(e.amount)
         else:
-            category_totals[cat] = float(e.amount)
+            category_totals[cat] = safe_decimal(e.amount)
 
-    total = sum(category_totals.values())
+    total = sum(category_totals.values()) or Decimal('0.00')
     top_category = max(category_totals, key=category_totals.get)
     top_amount = category_totals[top_category]
-    top_percent = round((top_amount / total) * 100)
+    top_percent = round((top_amount / total) * 100) if total > 0 else 0
 
     tips = {
         'Food': 'Try cooking at home more often to reduce food expenses.',
@@ -197,8 +198,7 @@ You have recorded {expenses.count()} expenses with a total spending of ₹{round
 
     summary += f"\n💡 Smart Tip: {tip}"
 
-    return render(request, 'ai_summary.html', {'summary': summary})  
-# yaha se change kiya hai~>
+    return render(request, 'ai_summary.html', {'summary': summary})
 
 from django.contrib.admin.views.decorators import staff_member_required
 
@@ -230,9 +230,19 @@ def manage_panel(request):
             pass
         return redirect('manage_panel')
 
+    # ✅ Har approved user ka total safely calculate karo
+    approved_with_totals = []
+    for profile in approved:
+        user_total = sum(safe_decimal(e.amount) for e in profile.user.expense_set.all()) or Decimal('0.00')
+        approved_with_totals.append({
+            'profile': profile,
+            'total': user_total
+        })
+
     return render(request, 'manage_panel.html', {
         'pending': pending,
         'approved': approved,
+        'approved_with_totals': approved_with_totals,  # ✅ NEW
         'declined': declined,
         'recent_expenses': recent_expenses,
     })

@@ -39,11 +39,11 @@
     /* User Row */
     .user-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #f5f5f5; flex-wrap: wrap; gap: 10px; }
     .user-row:last-child { border-bottom: none; padding-bottom: 0; }
-    .user-left { display: flex; align-items: center; gap: 12px; }
+    .user-left { display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0; }
     .avatar { width: 42px; height: 42px; border-radius: 50%; background: #eef2ff; display: flex; align-items: center; justify-content: center; font-size: 17px; font-weight: 700; color: #4f46e5; flex-shrink: 0; }
     .uname { font-weight: 600; color: #2c3e50; font-size: 14px; }
     .umeta { font-size: 11px; color: #aaa; margin-top: 2px; }
-    .user-right { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .user-right { display: flex; align-items: center; justify-content: flex-end; gap: 8px; flex-wrap: wrap; }
 
     /* Badges */
     .badge { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; }
@@ -188,30 +188,30 @@
     </div>
 
     <!-- Tab: All Users -->
-    <div class="tab-content" id="users-tab">
-      <div class="section">
-        <div class="section-header">
-          <div class="section-title">👥 All Users</div>
+<div class="tab-content" id="users-tab">
+  <div class="section">
+    <div class="section-header">
+      <div class="section-title">👥 All Users</div>
+    </div>
+    {% for item in approved_with_totals %}
+    <div class="user-row">
+      <div class="user-left">
+        <div class="avatar">{{ item.profile.user.username|first|upper }}</div>
+        <div>
+          <div class="uname">{{ item.profile.user.username }}</div>
+          <div class="umeta">Joined: {{ item.profile.user.date_joined|date:"d M Y" }} &nbsp;|&nbsp; Expenses: {{ item.profile.user.expense_set.count }} &nbsp;|&nbsp; Total: ₹{{ item.total }}</div>
         </div>
-        {% for profile in approved %}
-        <div class="user-row">
-          <div class="user-left">
-            <div class="avatar">{{ profile.user.username|first|upper }}</div>
-            <div>
-              <div class="uname">{{ profile.user.username }}</div>
-              <div class="umeta">Joined: {{ profile.user.date_joined|date:"d M Y" }} &nbsp;|&nbsp; Expenses: {{ profile.user.expense_set.count }} &nbsp;|&nbsp; Total: ₹{% with total=profile.user.expense_set.all %}{% for e in total %}{{ e.amount|add:0 }}{% endfor %}{% endwith %}</div>
-            </div>
-          </div>
-          <div class="user-right">
-            <span class="badge badge-approved">Active</span>
-            <button class="btn-delete" onclick="openDeleteModal('{{ profile.user.id }}', '{{ profile.user.username }}')">🗑 Remove</button>
-          </div>
-        </div>
-        {% empty %}
-          <div class="empty">No approved users yet</div>
-        {% endfor %}
+      </div>
+      <div class="user-right">
+        <span class="badge badge-approved">Active</span>
+        <button class="btn-delete" onclick="openDeleteModal('{{ item.profile.user.id }}', '{{ item.profile.user.username }}')">🗑 Remove</button>
       </div>
     </div>
+    {% empty %}
+      <div class="empty">No approved users yet</div>
+    {% endfor %}
+  </div>
+</div>
 
     <!-- Tab: Recent Expenses -->
     <div class="tab-content" id="activity-tab">

@@ -3,70 +3,188 @@
 <head>
   <title>SmartSpend - Login</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      background: #eef2ff;
-      background-image: radial-gradient(#c7d2fe 1px, transparent 1px);
-      background-size: 25px 25px;
-      padding: 16px;
+    body { font-family: 'Inter', sans-serif; min-height: 100vh; display: flex; background: #0f172a; }
+
+    .left-panel {
+      flex: 1;
+      background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 50%, #0f2d4a 100%);
+      display: flex; flex-direction: column; justify-content: center;
+      padding: 60px 50px; position: relative; overflow: hidden;
     }
-    .box {
-      background: white;
-      padding: 45px 40px;
-      border-radius: 16px;
-      box-shadow: 0 8px 30px rgba(99,102,241,0.12);
-      width: 100%;
-      max-width: 340px;
+    .left-panel::before {
+      content: ''; position: absolute;
+      width: 400px; height: 400px;
+      background: radial-gradient(circle, rgba(16,185,129,0.15) 0%, transparent 70%);
+      top: -100px; left: -100px; border-radius: 50%;
     }
-    .logo { text-align: center; font-size: 26px; font-weight: 700; color: #4f46e5; margin-bottom: 6px; }
-    .tagline { text-align: center; color: #888; font-size: 13px; margin-bottom: 28px; }
-    label { font-size: 12px; color: #555; font-weight: 600; display: block; margin: 12px 0 5px; letter-spacing: 0.5px; }
-    input { width: 100%; padding: 11px 14px; border: 1.5px solid #e0e0e0; border-radius: 9px; font-size: 14px; color: #333; transition: 0.2s; }
-    input:focus { outline: none; border-color: #4f46e5; box-shadow: 0 0 0 3px rgba(79,70,229,0.1); }
-    .password-wrapper { position: relative; }
-    .password-wrapper input { padding-right: 44px; }
-    .eye-btn { position: absolute; right: 13px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; font-size: 17px; padding: 0; margin: 0; width: auto; color: #888; }
-    .eye-btn:hover { background: none; color: #4f46e5; }
-    button[type="submit"] { width: 100%; padding: 12px; background: #4f46e5; color: white; border: none; border-radius: 9px; cursor: pointer; font-size: 15px; font-weight: 600; margin-top: 20px; letter-spacing: 0.3px; }
-    button[type="submit"]:hover { background: #4338ca; }
-    .register-link { display: block; text-align: center; margin-top: 16px; font-size: 13px; color: #4f46e5; text-decoration: none; }
-    .register-link:hover { text-decoration: underline; }
-    @media (max-width: 480px) {
-      .box { padding: 32px 24px; }
-      .logo { font-size: 22px; }
-      button[type="submit"] { font-size: 14px; padding: 11px; }
+    .left-panel::after {
+      content: ''; position: absolute;
+      width: 300px; height: 300px;
+      background: radial-gradient(circle, rgba(79,70,229,0.2) 0%, transparent 70%);
+      bottom: -50px; right: -50px; border-radius: 50%;
+    }
+    .brand { display: flex; align-items: center; gap: 12px; margin-bottom: 48px; }
+    .brand-icon {
+      width: 52px; height: 52px;
+      background: linear-gradient(135deg, #10b981, #059669);
+      border-radius: 14px; display: flex; align-items: center; justify-content: center;
+      font-size: 26px; box-shadow: 0 8px 24px rgba(16,185,129,0.35);
+    }
+    .brand-name { font-size: 26px; font-weight: 800; color: white; }
+    .hero-title { font-size: 38px; font-weight: 800; color: white; line-height: 1.2; margin-bottom: 16px; letter-spacing: -1px; }
+    .hero-title span { color: #10b981; }
+    .hero-sub { font-size: 16px; color: #94a3b8; line-height: 1.7; margin-bottom: 44px; }
+    .features { display: flex; flex-direction: column; gap: 18px; }
+    .feature { display: flex; align-items: flex-start; gap: 14px; }
+    .feature-icon { width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+    .fi-green { background: rgba(16,185,129,0.15); }
+    .fi-blue { background: rgba(79,70,229,0.15); }
+    .fi-yellow { background: rgba(245,158,11,0.15); }
+    .feature-text h4 { font-size: 14px; font-weight: 600; color: #e2e8f0; margin-bottom: 2px; }
+    .feature-text p { font-size: 13px; color: #64748b; }
+
+    .right-panel {
+      width: 480px; background: #f8fafc;
+      display: flex; align-items: center; justify-content: center;
+      padding: 40px 48px;
+    }
+    .form-box { width: 100%; }
+    .form-title { font-size: 26px; font-weight: 800; color: #0f172a; margin-bottom: 6px; }
+    .form-sub { font-size: 14px; color: #64748b; margin-bottom: 32px; }
+    .input-group { margin-bottom: 18px; }
+    .input-label { font-size: 12px; font-weight: 600; color: #374151; letter-spacing: 0.5px; display: block; margin-bottom: 7px; }
+    .input-wrap { position: relative; }
+    .input-wrap input {
+      width: 100%; padding: 13px 16px;
+      border: 1.5px solid #e2e8f0; border-radius: 10px;
+      font-size: 14px; color: #1e293b; background: white;
+      font-family: 'Inter', sans-serif; transition: 0.2s;
+    }
+    .input-wrap input:focus { outline: none; border-color: #10b981; box-shadow: 0 0 0 3px rgba(16,185,129,0.12); }
+    .eye-btn { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; font-size: 16px; color: #94a3b8; }
+    .error-msg { background: #fef2f2; border: 1px solid #fecaca; color: #dc2626; padding: 10px 14px; border-radius: 8px; font-size: 13px; margin-bottom: 16px; }
+    .submit-btn {
+      width: 100%; padding: 14px;
+      background: linear-gradient(135deg, #10b981, #059669);
+      color: white; border: none; border-radius: 10px;
+      font-size: 15px; font-weight: 700; cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      box-shadow: 0 4px 14px rgba(16,185,129,0.35);
+      transition: 0.2s; margin-top: 6px;
+    }
+    .submit-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(16,185,129,0.4); }
+    .bottom-link { text-align: center; margin-top: 20px; font-size: 13px; color: #64748b; }
+    .bottom-link a { color: #10b981; font-weight: 600; text-decoration: none; }
+
+    /* Mobile chips - hidden on desktop */
+    .mobile-features { display: none; }
+
+    @media (max-width: 768px) {
+      body { flex-direction: column; background: #0f172a; }
+
+      .left-panel {
+        padding: 28px 24px 20px;
+        flex: none;
+      }
+      .brand { margin-bottom: 16px; }
+      .brand-name { font-size: 22px; }
+      .hero-title { font-size: 22px; margin-bottom: 8px; }
+      .hero-sub { font-size: 13px; margin-bottom: 16px; }
+      .features { display: none; } /* desktop features hidden on mobile */
+
+      .mobile-features {
+        display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px;
+      }
+      .chip {
+        background: rgba(16,185,129,0.15);
+        border: 1px solid rgba(16,185,129,0.25);
+        color: #6ee7b7; font-size: 12px; font-weight: 600;
+        padding: 6px 12px; border-radius: 20px;
+      }
+
+      .right-panel {
+        width: 100%; background: #f8fafc;
+        border-radius: 24px 24px 0 0;
+        padding: 28px 24px 40px;
+        flex: 1;
+      }
+      .form-title { font-size: 22px; }
     }
   </style>
 </head>
 <body>
-  <div class="box">
-    <div class="logo">💰 SmartSpend</div>
-    <div class="tagline">Track your expenses smartly</div>
-    <form method="POST">
-      {% csrf_token %}
-      <label>USERNAME</label>
-      <input type="text" name="username" placeholder="Enter username" required autocomplete="username">
-      <label>PASSWORD</label>
-      <div class="password-wrapper">
-        <input type="password" name="password" id="passwordInput" placeholder="Enter password" required autocomplete="current-password">
-        <button type="button" class="eye-btn" onclick="togglePassword()" title="Show/Hide password">👁️</button>
+
+  <div class="left-panel">
+    <div class="brand">
+      <div class="brand-icon">💰</div>
+      <div class="brand-name">SmartSpend</div>
+    </div>
+    <h1 class="hero-title">Track Every Rupee,<br>Live <span>Stress Free</span></h1>
+    <p class="hero-sub">Simple, smart, and free — manage your daily spending, set budgets, and get AI-powered insights anytime.</p>
+
+    <!-- Desktop features -->
+    <div class="features">
+      <div class="feature">
+        <div class="feature-icon fi-green">📊</div>
+        <div class="feature-text">
+          <h4>Visual Spending Charts</h4>
+          <p>See exactly where your money goes every month</p>
+        </div>
       </div>
-      <button type="submit">Login →</button>
-    </form>
-    <a class="register-link" href="/register/">New user? Register here</a>
+      <div class="feature">
+        <div class="feature-icon fi-blue">🤖</div>
+        <div class="feature-text">
+          <h4>AI Smart Insights</h4>
+          <p>Get personalized tips to improve spending habits</p>
+        </div>
+      </div>
+      <div class="feature">
+        <div class="feature-icon fi-yellow">🔔</div>
+        <div class="feature-text">
+          <h4>Budget Alerts</h4>
+          <p>Get notified before you overspend your limit</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mobile chips -->
+    <div class="mobile-features">
+      <span class="chip">📊 Charts</span>
+      <span class="chip">🤖 AI Insights</span>
+      <span class="chip">🔔 Budget Alerts</span>
+    </div>
   </div>
 
-  <script>
-    function togglePassword() {
-      const input = document.getElementById('passwordInput');
-      input.type = input.type === 'password' ? 'text' : 'password';
-    }
-  </script>
+  <div class="right-panel">
+    <div class="form-box">
+      <div class="form-title">Welcome back 👋</div>
+      <div class="form-sub">Login to your SmartSpend account</div>
+      {% if error %}
+        <div class="error-msg">⚠️ {{ error }}</div>
+      {% endif %}
+      <form method="POST">
+        {% csrf_token %}
+        <div class="input-group">
+          <label class="input-label">USERNAME</label>
+          <div class="input-wrap">
+            <input type="text" name="username" placeholder="Enter your username" required autocomplete="username">
+          </div>
+        </div>
+        <div class="input-group">
+          <label class="input-label">PASSWORD</label>
+          <div class="input-wrap">
+            <input type="password" name="password" id="loginPass" placeholder="Enter your password" required autocomplete="current-password">
+            <button type="button" class="eye-btn" onclick="document.getElementById('loginPass').type = document.getElementById('loginPass').type === 'password' ? 'text' : 'password'">👁️</button>
+          </div>
+        </div>
+        <button type="submit" class="submit-btn">Login to SmartSpend →</button>
+      </form>
+      <div class="bottom-link">Don't have an account? <a href="/register/">Register here</a></div>
+    </div>
+  </div>
+
 </body>
 </html>

@@ -3,93 +3,110 @@
 <head>
   <title>SmartSpend - Admin Panel</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: 'Segoe UI', sans-serif; background: #eef2ff; background-image: radial-gradient(#c7d2fe 1px, transparent 1px); background-size: 25px 25px; min-height: 100vh; }
+    body { font-family: 'Inter', sans-serif; background: #f1f5f9; min-height: 100vh; }
 
-    .navbar { background: white; padding: 14px 24px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.08); }
-    .navbar h2 { color: #4f46e5; font-size: 20px; font-weight: 700; }
-    .back-btn { padding: 8px 16px; background: #4f46e5; color: white; border-radius: 8px; text-decoration: none; font-size: 13px; font-weight: 600; }
+    .navbar {
+      background: #0f172a;
+      border-bottom: 2px solid rgba(16,185,129,0.3);
+      padding: 0 28px; height: 64px;
+      display: flex; justify-content: space-between; align-items: center;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.3);
+      position: sticky; top: 0; z-index: 100;
+    }
+    .nav-brand { display: flex; align-items: center; gap: 10px; }
+    .nav-brand-icon {
+      width: 36px; height: 36px;
+      background: linear-gradient(135deg, #10b981, #059669);
+      border-radius: 10px; display: flex; align-items: center;
+      justify-content: center; font-size: 18px;
+      box-shadow: 0 2px 8px rgba(16,185,129,0.4);
+    }
+    .nav-brand-name { font-size: 18px; font-weight: 800; color: white; }
+    .back-btn {
+      padding: 8px 16px; background: #10b981;
+      color: white; border-radius: 8px;
+      text-decoration: none; font-size: 13px; font-weight: 600;
+      border: none; transition: 0.2s;
+    }
+    .back-btn:hover { background: #059669; color: white; }
 
     .container { max-width: 960px; margin: 28px auto; padding: 0 16px; }
 
-    /* Stats */
     .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 24px; }
-    .stat-card { background: white; border-radius: 12px; padding: 18px 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); display: flex; align-items: center; gap: 14px; }
+    .stat-card {
+      background: white; border-radius: 12px; padding: 18px 20px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+      display: flex; align-items: center; gap: 14px;
+      border: 1px solid #e2e8f0;
+    }
     .stat-icon { width: 46px; height: 46px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
     .stat-icon.total { background: #eef2ff; }
     .stat-icon.pending { background: #fef9c3; }
     .stat-icon.approved { background: #dcfce7; }
     .stat-icon.declined { background: #fee2e2; }
-    .stat-num { font-size: 26px; font-weight: 700; color: #2c3e50; line-height: 1; }
-    .stat-label { font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 3px; }
+    .stat-num { font-size: 26px; font-weight: 800; color: #0f172a; line-height: 1; }
+    .stat-label { font-size: 11px; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 3px; font-weight: 600; }
 
-    /* Tabs */
-    .tabs { display: flex; gap: 4px; background: white; border-radius: 12px; padding: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); margin-bottom: 20px; }
-    .tab { flex: 1; padding: 10px; text-align: center; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600; color: #888; border: none; background: none; transition: 0.2s; }
-    .tab.active { background: #4f46e5; color: white; }
+    .tabs { display: flex; gap: 4px; background: white; border-radius: 12px; padding: 6px; box-shadow: 0 2px 12px rgba(0,0,0,0.07); margin-bottom: 20px; border: 1px solid #e2e8f0; }
+    .tab { flex: 1; padding: 10px; text-align: center; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600; color: #64748b; border: none; background: none; transition: 0.2s; font-family: 'Inter', sans-serif; }
+    .tab.active { background: linear-gradient(135deg, #1d4ed8, #2563eb); color: white; box-shadow: 0 2px 8px rgba(37,99,235,0.3); }
     .tab-content { display: none; }
     .tab-content.active { display: block; }
 
-    /* Section */
-    .section { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); margin-bottom: 16px; }
+    .section { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 2px 12px rgba(0,0,0,0.07); margin-bottom: 16px; border: 1px solid #e2e8f0; }
     .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
-    .section-title { font-size: 15px; font-weight: 700; color: #2c3e50; }
+    .section-title { font-size: 15px; font-weight: 700; color: #0f172a; }
 
-    /* User Row */
-    .user-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #f5f5f5; flex-wrap: wrap; gap: 10px; }
+    .user-row { display: flex; justify-content: space-between; align-items: flex-start; padding: 12px 0; border-bottom: 1px solid #f1f5f9; flex-wrap: wrap; gap: 10px; }
     .user-row:last-child { border-bottom: none; padding-bottom: 0; }
     .user-left { display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0; }
-    .avatar { width: 42px; height: 42px; border-radius: 50%; background: #eef2ff; display: flex; align-items: center; justify-content: center; font-size: 17px; font-weight: 700; color: #4f46e5; flex-shrink: 0; }
-    .uname { font-weight: 600; color: #2c3e50; font-size: 14px; }
-    .umeta { font-size: 11px; color: #aaa; margin-top: 2px; }
+    .avatar { width: 42px; height: 42px; border-radius: 50%; background: #eef2ff; display: flex; align-items: center; justify-content: center; font-size: 17px; font-weight: 800; color: #4f46e5; flex-shrink: 0; }
+    .uname { font-weight: 700; color: #0f172a; font-size: 14px; }
+    .umeta { font-size: 11px; color: #94a3b8; margin-top: 2px; }
     .user-right { display: flex; align-items: center; justify-content: flex-end; gap: 8px; flex-wrap: wrap; }
 
-    /* Badges */
-    .badge { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+    .badge { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; }
     .badge-pending { background: #fef9c3; color: #854d0e; }
     .badge-approved { background: #dcfce7; color: #166534; }
     .badge-declined { background: #fee2e2; color: #991b1b; }
 
-    /* Buttons */
-    .btn-approve { padding: 7px 14px; background: #2ecc71; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 12px; font-weight: 600; }
-    .btn-decline { padding: 7px 14px; background: #e74c3c; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 12px; font-weight: 600; }
-    .btn-restore { padding: 7px 14px; background: #3498db; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 12px; font-weight: 600; }
-    .btn-delete { padding: 7px 14px; background: #fff; color: #e74c3c; border: 1.5px solid #e74c3c; border-radius: 8px; cursor: pointer; font-size: 12px; font-weight: 600; }
-    .btn-approve:hover { background: #27ae60; }
-    .btn-decline:hover { background: #c0392b; }
-    .btn-restore:hover { background: #2980b9; }
+    .btn-approve { padding: 7px 14px; background: linear-gradient(135deg, #10b981, #059669); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 12px; font-weight: 700; font-family: 'Inter', sans-serif; }
+    .btn-decline { padding: 7px 14px; background: linear-gradient(135deg, #ef4444, #dc2626); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 12px; font-weight: 700; font-family: 'Inter', sans-serif; }
+    .btn-restore { padding: 7px 14px; background: linear-gradient(135deg, #3b82f6, #2563eb); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 12px; font-weight: 700; font-family: 'Inter', sans-serif; }
+    .btn-delete { padding: 7px 14px; background: white; color: #dc2626; border: 1.5px solid #fecaca; border-radius: 8px; cursor: pointer; font-size: 12px; font-weight: 700; font-family: 'Inter', sans-serif; }
     .btn-delete:hover { background: #fee2e2; }
 
-    /* Expense table */
     .exp-table { width: 100%; border-collapse: collapse; }
-    .exp-table th { font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: #888; padding: 8px 12px; text-align: left; border-bottom: 2px solid #f0f0f0; }
-    .exp-table td { padding: 10px 12px; font-size: 13px; color: #444; border-bottom: 1px solid #f8f8f8; }
+    .exp-table th { font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: #94a3b8; padding: 10px 12px; text-align: left; border-bottom: 2px solid #f1f5f9; font-weight: 700; background: #f8fafc; }
+    .exp-table td { padding: 12px; font-size: 13px; color: #374151; border-bottom: 1px solid #f1f5f9; }
     .exp-table tr:last-child td { border-bottom: none; }
-    .cat-badge { padding: 3px 8px; border-radius: 20px; font-size: 11px; font-weight: 600; background: #eef2ff; color: #4f46e5; }
+    .exp-table tr:hover td { background: #f8fafc; }
+    .cat-badge { padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; background: #eef2ff; color: #4f46e5; }
 
-    .empty { text-align: center; color: #bbb; font-size: 13px; padding: 24px 0; }
+    .empty { text-align: center; color: #94a3b8; font-size: 13px; padding: 32px 0; }
 
-    /* Delete modal */
-    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 1000; justify-content: center; align-items: center; }
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; backdrop-filter: blur(4px); }
     .modal-overlay.active { display: flex; }
-    .modal { background: white; border-radius: 16px; padding: 28px; width: 90%; max-width: 340px; text-align: center; }
-    .modal h3 { color: #2c3e50; margin-bottom: 8px; }
-    .modal p { color: #666; font-size: 13px; margin-bottom: 22px; line-height: 1.6; }
+    .modal { background: white; border-radius: 20px; padding: 32px 28px; width: 90%; max-width: 340px; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.25); }
+    .modal h3 { color: #0f172a; margin-bottom: 8px; font-size: 18px; font-weight: 800; }
+    .modal p { color: #64748b; font-size: 13px; margin-bottom: 22px; line-height: 1.6; }
     .modal-btns { display: flex; gap: 10px; justify-content: center; }
-    .modal-cancel { padding: 10px 22px; border-radius: 8px; border: 1.5px solid #ddd; background: white; color: #555; font-size: 13px; font-weight: 600; cursor: pointer; }
-    .modal-confirm { padding: 10px 22px; border-radius: 8px; border: none; background: #e74c3c; color: white; font-size: 13px; font-weight: 600; cursor: pointer; }
+    .modal-cancel { padding: 10px 22px; border-radius: 9px; border: 1.5px solid #e2e8f0; background: white; color: #64748b; font-size: 13px; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; }
+    .modal-confirm { padding: 10px 22px; border-radius: 9px; border: none; background: linear-gradient(135deg, #ef4444, #dc2626); color: white; font-size: 13px; font-weight: 700; cursor: pointer; font-family: 'Inter', sans-serif; }
 
     @media (max-width: 600px) {
       .stats { grid-template-columns: repeat(2, 1fr); }
       .tabs { gap: 2px; }
-      .tab { font-size: 12px; padding: 8px 4px; }
+      .tab { font-size: 11px; padding: 8px 4px; }
+      .navbar { padding: 0 16px; }
     }
   </style>
 </head>
 <body>
 
-  <!-- Delete Confirm Modal -->
   <div class="modal-overlay" id="deleteModal">
     <div class="modal">
       <h3>🗑️ Delete User</h3>
@@ -101,14 +118,16 @@
     </div>
   </div>
 
-  <div class="navbar">
-    <h2>⚙️ Admin Panel</h2>
+  <nav class="navbar">
+    <div class="nav-brand">
+      <div class="nav-brand-icon">💰</div>
+      <div class="nav-brand-name">SmartSpend</div>
+    </div>
     <a href="/" class="back-btn">← Dashboard</a>
-  </div>
+  </nav>
 
   <div class="container">
 
-    <!-- Stats -->
     <div class="stats">
       <div class="stat-card">
         <div class="stat-icon total">👥</div>
@@ -127,20 +146,19 @@
       <div class="stat-card">
         <div class="stat-icon approved">✅</div>
         <div>
-          <div class="stat-num" style="color:#2ecc71;">{{ approved|length }}</div>
+          <div class="stat-num" style="color:#10b981;">{{ approved|length }}</div>
           <div class="stat-label">Approved</div>
         </div>
       </div>
       <div class="stat-card">
         <div class="stat-icon declined">❌</div>
         <div>
-          <div class="stat-num" style="color:#e74c3c;">{{ declined|length }}</div>
+          <div class="stat-num" style="color:#ef4444;">{{ declined|length }}</div>
           <div class="stat-label">Declined</div>
         </div>
       </div>
     </div>
 
-    <!-- Tabs -->
     <div class="tabs">
       <button class="tab active" onclick="switchTab('pending-tab', this)">🕐 Pending ({{ pending|length }})</button>
       <button class="tab" onclick="switchTab('users-tab', this)">👥 All Users</button>
@@ -148,7 +166,6 @@
       <button class="tab" onclick="switchTab('recycle-tab', this)">🗑️ Recycle Bin</button>
     </div>
 
-    <!-- Tab: Pending -->
     <div class="tab-content active" id="pending-tab">
       <div class="section">
         <div class="section-header">
@@ -187,33 +204,31 @@
       </div>
     </div>
 
-    <!-- Tab: All Users -->
-<div class="tab-content" id="users-tab">
-  <div class="section">
-    <div class="section-header">
-      <div class="section-title">👥 All Users</div>
-    </div>
-    {% for item in approved_with_totals %}
-    <div class="user-row">
-      <div class="user-left">
-        <div class="avatar">{{ item.profile.user.username|first|upper }}</div>
-        <div>
-          <div class="uname">{{ item.profile.user.username }}</div>
-          <div class="umeta">Joined: {{ item.profile.user.date_joined|date:"d M Y" }} &nbsp;|&nbsp; Expenses: {{ item.profile.user.expense_set.count }} &nbsp;|&nbsp; Total: ₹{{ item.total }}</div>
+    <div class="tab-content" id="users-tab">
+      <div class="section">
+        <div class="section-header">
+          <div class="section-title">👥 All Users</div>
         </div>
-      </div>
-      <div class="user-right">
-        <span class="badge badge-approved">Active</span>
-        <button class="btn-delete" onclick="openDeleteModal('{{ item.profile.user.id }}', '{{ item.profile.user.username }}')">🗑 Remove</button>
+        {% for item in approved_with_totals %}
+        <div class="user-row">
+          <div class="user-left">
+            <div class="avatar">{{ item.profile.user.username|first|upper }}</div>
+            <div>
+              <div class="uname">{{ item.profile.user.username }}</div>
+              <div class="umeta">Joined: {{ item.profile.user.date_joined|date:"d M Y" }} &nbsp;|&nbsp; Expenses: {{ item.profile.user.expense_set.count }} &nbsp;|&nbsp; Total: ₹{{ item.total }}</div>
+            </div>
+          </div>
+          <div class="user-right">
+            <span class="badge badge-approved">Active</span>
+            <button class="btn-delete" onclick="openDeleteModal('{{ item.profile.user.id }}', '{{ item.profile.user.username }}')">🗑 Remove</button>
+          </div>
+        </div>
+        {% empty %}
+          <div class="empty">No approved users yet</div>
+        {% endfor %}
       </div>
     </div>
-    {% empty %}
-      <div class="empty">No approved users yet</div>
-    {% endfor %}
-  </div>
-</div>
 
-    <!-- Tab: Recent Expenses -->
     <div class="tab-content" id="activity-tab">
       <div class="section">
         <div class="section-header">
@@ -223,11 +238,7 @@
         <div style="overflow-x:auto;">
           <table class="exp-table">
             <tr>
-              <th>User</th>
-              <th>Title</th>
-              <th>Amount</th>
-              <th>Category</th>
-              <th>Date</th>
+              <th>User</th><th>Title</th><th>Amount</th><th>Category</th><th>Date</th>
             </tr>
             {% for e in recent_expenses %}
             <tr>
@@ -246,7 +257,6 @@
       </div>
     </div>
 
-    <!-- Tab: Recycle Bin -->
     <div class="tab-content" id="recycle-tab">
       <div class="section">
         <div class="section-header">
@@ -256,7 +266,7 @@
           {% for profile in declined %}
           <div class="user-row">
             <div class="user-left">
-              <div class="avatar" style="background:#fee2e2; color:#e74c3c;">{{ profile.user.username|first|upper }}</div>
+              <div class="avatar" style="background:#fee2e2; color:#dc2626;">{{ profile.user.username|first|upper }}</div>
               <div>
                 <div class="uname">{{ profile.user.username }}</div>
                 <div class="umeta">Declined on: {{ profile.user.date_joined|date:"d M Y" }}</div>
@@ -282,7 +292,6 @@
 
   </div>
 
-  <!-- Hidden delete form -->
   <form method="POST" id="deleteForm" style="display:none;">
     {% csrf_token %}
     <input type="hidden" name="user_id" id="deleteUserId">
@@ -296,20 +305,16 @@
       document.getElementById(tabId).classList.add('active');
       btn.classList.add('active');
     }
-
     function openDeleteModal(userId, username) {
       document.getElementById('deleteUserId').value = userId;
       document.getElementById('deleteModal').classList.add('active');
     }
-
     function closeDeleteModal() {
       document.getElementById('deleteModal').classList.remove('active');
     }
-
     function submitDelete() {
       document.getElementById('deleteForm').submit();
     }
-
     document.getElementById('deleteModal').addEventListener('click', function(e) {
       if (e.target === this) closeDeleteModal();
     });

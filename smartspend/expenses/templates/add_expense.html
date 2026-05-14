@@ -3,67 +3,178 @@
 <head>
   <title>SmartSpend - Add Expense</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: 'Segoe UI', sans-serif; min-height: 100vh; display: flex; justify-content: center; align-items: center; background: #eef2ff; background-image: radial-gradient(#c7d2fe 1px, transparent 1px); background-size: 25px 25px; padding: 16px; }
-    .box { background: white; padding: 40px 32px; border-radius: 16px; box-shadow: 0 8px 30px rgba(99,102,241,0.12); width: 100%; max-width: 400px; }
-    .logo { text-align: center; font-size: 22px; font-weight: 700; color: #4f46e5; margin-bottom: 4px; }
-    .tagline { text-align: center; color: #888; font-size: 13px; margin-bottom: 25px; }
-    label { font-size: 12px; color: #555; font-weight: 600; display: block; margin: 12px 0 5px; letter-spacing: 0.5px; }
-    input, select, textarea { width: 100%; padding: 11px 14px; border: 1.5px solid #e0e0e0; border-radius: 9px; font-size: 14px; color: #333; transition: 0.2s; }
-    input:focus, select:focus, textarea:focus { outline: none; border-color: #4f46e5; box-shadow: 0 0 0 3px rgba(79,70,229,0.1); }
-    button { width: 100%; padding: 12px; background: #4f46e5; color: white; border: none; border-radius: 9px; cursor: pointer; font-size: 15px; font-weight: 600; margin-top: 20px; }
-    button:hover { background: #4338ca; }
-    .back-link { display: block; text-align: center; margin-top: 14px; color: #4f46e5; text-decoration: none; font-size: 13px; }
+    body { font-family: 'Inter', sans-serif; min-height: 100vh; background: #0f172a; display: flex; flex-direction: column; }
+
+    .navbar {
+      background: #0f172a;
+      border-bottom: 2px solid rgba(16,185,129,0.3);
+      padding: 0 28px; height: 64px;
+      display: flex; align-items: center;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.3);
+    }
+    .nav-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+    .nav-brand-icon {
+      width: 36px; height: 36px;
+      background: linear-gradient(135deg, #10b981, #059669);
+      border-radius: 10px; display: flex; align-items: center;
+      justify-content: center; font-size: 18px;
+      box-shadow: 0 2px 8px rgba(16,185,129,0.4);
+    }
+    .nav-brand-name { font-size: 18px; font-weight: 800; color: white; }
+
+    .page-wrapper {
+      flex: 1; display: flex; align-items: center; justify-content: center;
+      padding: 32px 16px;
+      background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 60%, #0f172a 100%);
+    }
+
+    .form-card {
+      background: white; border-radius: 20px;
+      padding: 36px 32px;
+      width: 100%; max-width: 460px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+
+    .card-header { margin-bottom: 28px; }
+    .card-title { font-size: 22px; font-weight: 800; color: #0f172a; margin-bottom: 4px; }
+    .card-sub { font-size: 13px; color: #64748b; }
+
+    .input-group { margin-bottom: 16px; }
+    .input-label { font-size: 11px; font-weight: 700; color: #374151; letter-spacing: 0.7px; display: block; margin-bottom: 7px; text-transform: uppercase; }
+    .input-field {
+      width: 100%; padding: 12px 16px;
+      border: 1.5px solid #e2e8f0; border-radius: 10px;
+      font-size: 14px; color: #1e293b; background: #f8fafc;
+      font-family: 'Inter', sans-serif; transition: 0.2s;
+    }
+    .input-field:focus { outline: none; border-color: #10b981; background: white; box-shadow: 0 0 0 3px rgba(16,185,129,0.12); }
+
+    .category-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .cat-btn {
+      padding: 10px 8px; border: 1.5px solid #e2e8f0;
+      border-radius: 10px; background: #f8fafc;
+      font-size: 12px; font-weight: 600; color: #64748b;
+      cursor: pointer; text-align: center; transition: 0.2s;
+      font-family: 'Inter', sans-serif;
+    }
+    .cat-btn:hover { border-color: #10b981; background: #f0fdf4; color: #059669; }
+    .cat-btn.selected { border-color: #10b981; background: #f0fdf4; color: #059669; }
+    select.input-field { cursor: pointer; }
+
+    .submit-btn {
+      width: 100%; padding: 14px;
+      background: linear-gradient(135deg, #10b981, #059669);
+      color: white; border: none; border-radius: 10px;
+      font-size: 15px; font-weight: 700; cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      box-shadow: 0 4px 16px rgba(16,185,129,0.4);
+      transition: 0.2s; margin-top: 8px;
+    }
+    .submit-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(16,185,129,0.5); }
+
+    .back-link {
+      display: block; text-align: center; margin-top: 16px;
+      color: #64748b; text-decoration: none; font-size: 13px; font-weight: 500;
+    }
+    .back-link:hover { color: #10b981; }
+
+    /* Budget exceeded */
+    .exceeded-card { text-align: center; }
+    .exceeded-icon { font-size: 52px; margin-bottom: 16px; }
+    .exceeded-title { font-size: 20px; font-weight: 800; color: #dc2626; margin-bottom: 8px; }
+    .exceeded-msg { font-size: 14px; color: #64748b; line-height: 1.6; margin-bottom: 24px; }
+    .exceeded-box { background: #fef2f2; border: 1.5px solid #fecaca; border-radius: 12px; padding: 16px; margin-bottom: 20px; }
+    .update-btn {
+      display: inline-block; padding: 12px 28px;
+      background: linear-gradient(135deg, #10b981, #059669);
+      color: white; border-radius: 10px; text-decoration: none;
+      font-size: 14px; font-weight: 700;
+      box-shadow: 0 4px 14px rgba(16,185,129,0.35);
+    }
+
     @media (max-width: 480px) {
-      .box { padding: 28px 20px; }
-      .logo { font-size: 20px; }
+      .form-card { padding: 24px 18px; }
+      .card-title { font-size: 20px; }
+      .category-grid { grid-template-columns: repeat(2, 1fr); }
+      .navbar { padding: 0 16px; }
     }
   </style>
 </head>
 <body>
-  <div class="box">
-    <div class="logo">💰 SmartSpend</div>
-    <div class="tagline">Add a new expense</div>
 
-    {% if budget_exceeded %}
-      <div style="background:#fadbd8; border-left:5px solid #e74c3c; padding:15px; border-radius:10px; margin-bottom:20px; text-align:center;">
-        <p style="color:#922b21; font-weight:700; font-size:15px;">🚨 Budget Exceeded!</p>
-        <p style="color:#922b21; font-size:13px; margin-top:6px;">You have spent ₹{{ total }} out of ₹{{ budget.monthly_limit }} budget.</p>
-        <a href="/#budget-section" style="display:inline-block; margin-top:12px; background:#4f46e5; color:white; padding:9px 20px; border-radius:9px; text-decoration:none; font-weight:600;">💰 Update Budget</a>
-      </div>
-    {% else %}
-      <form method="POST">
-        {% csrf_token %}
-        <label>TITLE</label>
-        <input type="text" name="title" placeholder="e.g. Lunch, Bus fare" required>
-        <label>AMOUNT (₹)</label>
-        <input type="number" name="amount" placeholder="Enter amount" step="0.01" required>
-        <label>CATEGORY</label>
-        <select name="category">
-          <option>Food</option>
-          <option>Travel</option>
-          <option>Education</option>
-          <option>Bills</option>
-          <option>Entertainment</option>
-          <option>Other</option>
-        </select>
-        <label>DATE</label>
-        <input type="date" name="date" id="dateInput" required>
-        <script>
-          const today = new Date();
-          const yyyy = today.getFullYear();
-          const mm = String(today.getMonth() + 1).padStart(2, '0');
-          const dd = String(today.getDate()).padStart(2, '0');
-          document.getElementById('dateInput').value = yyyy + '-' + mm + '-' + dd;
-        </script>
-        <label>NOTE (OPTIONAL)</label>
-        <textarea name="note" placeholder="Any extra detail..." rows="3"></textarea>
-        <button type="submit">Add Expense →</button>
-      </form>
-      <a class="back-link" href="/">← Back to Dashboard</a>
-    {% endif %}
+  <nav class="navbar">
+    <a href="/" class="nav-brand">
+      <div class="nav-brand-icon">💰</div>
+      <div class="nav-brand-name">SmartSpend</div>
+    </a>
+  </nav>
 
+  <div class="page-wrapper">
+    <div class="form-card">
+
+      {% if budget_exceeded %}
+        <div class="exceeded-card">
+          <div class="exceeded-icon">🚨</div>
+          <div class="exceeded-title">Budget Exceeded!</div>
+          <div class="exceeded-box">
+            <p class="exceeded-msg">You have spent <strong>₹{{ total }}</strong> out of your <strong>₹{{ budget.monthly_limit }}</strong> monthly budget. Please update your budget to add more expenses.</p>
+          </div>
+          <a href="/#budget-section" class="update-btn">💰 Update Budget</a>
+        </div>
+
+      {% else %}
+        <div class="card-header">
+          <div class="card-title">Add New Expense 💸</div>
+          <div class="card-sub">Track your spending — every rupee counts</div>
+        </div>
+
+        <form method="POST">
+          {% csrf_token %}
+          <div class="input-group">
+            <label class="input-label">Title</label>
+            <input type="text" name="title" class="input-field" placeholder="e.g. Lunch, Bus fare, Books" required>
+          </div>
+          <div class="input-group">
+            <label class="input-label">Amount (₹)</label>
+            <input type="number" name="amount" class="input-field" placeholder="Enter amount" step="0.01" required>
+          </div>
+          <div class="input-group">
+            <label class="input-label">Category</label>
+            <select name="category" class="input-field">
+              <option>Food</option>
+              <option>Travel</option>
+              <option>Education</option>
+              <option>Bills</option>
+              <option>Entertainment</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div class="input-group">
+            <label class="input-label">Date</label>
+            <input type="date" name="date" id="dateInput" class="input-field" required>
+          </div>
+          <div class="input-group">
+            <label class="input-label">Note (Optional)</label>
+            <textarea name="note" class="input-field" placeholder="Any extra details..." rows="3" style="resize:none;"></textarea>
+          </div>
+          <button type="submit" class="submit-btn">Add Expense →</button>
+        </form>
+        <a href="/" class="back-link">← Back to Dashboard</a>
+      {% endif %}
+
+    </div>
   </div>
+
+  <script>
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, '0');
+    const dd = String(today.getDate()).padStart(2, '0');
+    const dateInput = document.getElementById('dateInput');
+    if (dateInput) dateInput.value = yyyy + '-' + mm + '-' + dd;
+  </script>
 </body>
 </html>

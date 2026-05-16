@@ -47,14 +47,20 @@
     .feature-text p { font-size: 13px; color: #64748b; }
 
     .right-panel {
-      width: 520px;
-      min-width: 420px;
+      flex: 1;
+      max-width: 520px;
+      min-width: 320px;
       min-height: 100vh;
       background: #f8fafc;
-      display: flex; align-items: center; justify-content: center;
+      display: grid;
+      place-items: center;
       padding: 40px 48px;
     }
-    .form-box { width: 100%; }
+    .form-box {
+      width: 100%;
+      max-width: 420px;
+      margin: 0 auto;
+    }
     .form-title { font-size: 26px; font-weight: 800; color: #0f172a; margin-bottom: 6px; }
     .form-sub { font-size: 14px; color: #64748b; margin-bottom: 32px; }
     .input-group { margin-bottom: 18px; }

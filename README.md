@@ -40,3 +40,48 @@ A full-stack personal expense tracking web application built with Django (Python
 ## ⚙️ How to Run Locally
 
 1. Clone the repo
+
+git clone https://github.com/bhavyanandwana6-design/SmartSpend.git
+
+3. Install dependencies
+
+pip install -r requirements.txt
+
+5. Run migrations
+
+python manage.py migrate
+
+7. Start server
+
+python manage.py runserver
+
+9. Open: `http://127.0.0.1:8000`
+
+---
+
+## 📁 Project Structure
+
+SmartSpend/
+├── expenses/
+│   ├── templates/
+│   │   ├── login.html
+│   │   ├── register.html
+│   │   ├── dashboard.html
+│   │   ├── add_expense.html
+│   │   ├── edit_expense.html
+│   │   ├── ai_summary.html
+│   │   └── manage_panel.html
+│   ├── models.py
+│   ├── views.py
+│   └── urls.py
+├── smartspend/
+│   └── settings.py
+├── requirements.txt
+├── Procfile
+└── manage.py
+
+---
+
+## 👨‍💻 Developer
+
+**Bhavya Nandwana** | BCA 6th Semester | NIBM

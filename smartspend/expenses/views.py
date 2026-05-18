@@ -7,14 +7,14 @@ from decimal import Decimal, InvalidOperation
 
 def login_view(request):
     error = ''
-    not_registered_msg = ''
+    not_registered = False
     if request.method == 'POST':
         username = request.POST['username']
         password = request.POST['password']
 
         # Check if user exists at all
         if not User.objects.filter(username=username).exists():
-            not_registered_msg = True
+            not_registered = True
         else:
             user = authenticate(username=username, password=password)
             if user:
@@ -23,7 +23,7 @@ def login_view(request):
             else:
                 error = 'Invalid username or password'
 
-    return render(request, 'login.html', {'error': error, 'not_registered_msg': not_registered_msg})
+    return render(request, 'login.html', {'error': error, 'not_registered': not_registered})
 
 def register_view(request):
     error = ''

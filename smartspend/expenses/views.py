@@ -8,22 +8,40 @@ from decimal import Decimal, InvalidOperation
 def login_view(request):
     error = ''
     not_registered = False
+    pending_approval = False
     if request.method == 'POST':
         username = request.POST['username']
         password = request.POST['password']
 
-        # Check if user exists at all
         if not User.objects.filter(username=username).exists():
             not_registered = True
         else:
-            user = authenticate(username=username, password=password)
-            if user:
-                login(request, user)
-                return redirect('dashboard')
-            else:
-                error = 'Invalid username or password'
+            try:
+                profile = UserProfile.objects.get(user__username=username)
+                if profile.status == 'pending':
+                    pending_approval = True
+                elif profile.status == 'declined':
+                    error = 'Your account request has been declined. Please contact support.'
+                else:
+                    user = authenticate(username=username, password=password)
+                    if user:
+                        login(request, user)
+                        return redirect('dashboard')
+                    else:
+                        error = 'Invalid username or password'
+            except UserProfile.DoesNotExist:
+                user = authenticate(username=username, password=password)
+                if user:
+                    login(request, user)
+                    return redirect('dashboard')
+                else:
+                    error = 'Invalid username or password'
 
-    return render(request, 'login.html', {'error': error, 'not_registered': not_registered})
+    return render(request, 'login.html', {
+        'error': error,
+        'not_registered': not_registered,
+        'pending_approval': pending_approval
+    })
 
 def register_view(request):
     error = ''
@@ -236,7 +254,6 @@ def manage_panel(request):
             pass
         return redirect('manage_panel')
 
-    # ✅ Har approved user ka total safely calculate karo
     approved_with_totals = []
     for profile in approved:
         user_total = sum(safe_decimal(e.amount) for e in profile.user.expense_set.all()) or Decimal('0.00')
@@ -248,7 +265,7 @@ def manage_panel(request):
     return render(request, 'manage_panel.html', {
         'pending': pending,
         'approved': approved,
-        'approved_with_totals': approved_with_totals,  # ✅ NEW
+        'approved_with_totals': approved_with_totals,
         'declined': declined,
         'recent_expenses': recent_expenses,
     })

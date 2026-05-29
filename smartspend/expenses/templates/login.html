@@ -86,7 +86,6 @@
     .bottom-link { text-align: center; margin-top: 20px; font-size: 13px; color: #64748b; }
     .bottom-link a { color: #10b981; font-weight: 600; text-decoration: none; }
 
-    /* Mobile chips - hidden on desktop */
     .mobile-features { display: none; }
 
     @media (max-width: 768px) {
@@ -100,7 +99,7 @@
       .brand-name { font-size: 22px; }
       .hero-title { font-size: 22px; margin-bottom: 8px; }
       .hero-sub { font-size: 13px; margin-bottom: 16px; }
-      .features { display: none; } /* desktop features hidden on mobile */
+      .features { display: none; }
 
       .mobile-features {
         display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px;
@@ -185,36 +184,44 @@
     <div class="form-box">
       <div class="form-title">Welcome back 👋</div>
       <div class="form-sub">Login to your SmartSpend account</div>
-      {% if not_registered %}
-  <div class="pending-box">
-    <div class="pending-icon">🚫</div>
-    <div class="pending-title">Not Registered Yet!</div>
-    <p class="pending-msg">No account found with this username. Please register first, then wait for admin approval before logging in.</p>
-    <a href="/register/" class="back-login">→ Register First</a>
-  </div>
-{% else %}
-  {% if error %}
-    <div class="error-msg">⚠️ {{ error }}</div>
-  {% endif %}
-  <form method="POST">
-    {% csrf_token %}
-    <div class="input-group">
-      <label class="input-label">USERNAME</label>
-      <div class="input-wrap">
-        <input type="text" name="username" placeholder="Enter your username" required autocomplete="username">
-      </div>
-    </div>
-    <div class="input-group">
-      <label class="input-label">PASSWORD</label>
-      <div class="input-wrap">
-        <input type="password" name="password" id="loginPass" placeholder="Enter your password" required autocomplete="current-password">
-        <button type="button" class="eye-btn" onclick="document.getElementById('loginPass').type = document.getElementById('loginPass').type === 'password' ? 'text' : 'password'">👁️</button>
-      </div>
-    </div>
-    <button type="submit" class="submit-btn">Login to SmartSpend →</button>
-  </form>
-  <div class="bottom-link">Don't have an account? <a href="/register/">Register here</a></div>
-{% endif %}
+
+      {% if pending_approval %}
+        <div class="pending-box">
+          <div class="pending-icon">⏳</div>
+          <div class="pending-title">Approval Pending</div>
+          <p class="pending-msg">Your registration request is under review. Please wait for admin approval before logging in. Try again later.</p>
+          <a href="/login/" class="back-login">← Back to Login</a>
+        </div>
+      {% elif not_registered %}
+        <div class="pending-box">
+          <div class="pending-icon">🚫</div>
+          <div class="pending-title">Not Registered Yet!</div>
+          <p class="pending-msg">No account found with this username. Please register first, then wait for admin approval before logging in.</p>
+          <a href="/register/" class="back-login">→ Register First</a>
+        </div>
+      {% else %}
+        {% if error %}
+          <div class="error-msg">⚠️ {{ error }}</div>
+        {% endif %}
+        <form method="POST">
+          {% csrf_token %}
+          <div class="input-group">
+            <label class="input-label">USERNAME</label>
+            <div class="input-wrap">
+              <input type="text" name="username" placeholder="Enter your username" required autocomplete="username">
+            </div>
+          </div>
+          <div class="input-group">
+            <label class="input-label">PASSWORD</label>
+            <div class="input-wrap">
+              <input type="password" name="password" id="loginPass" placeholder="Enter your password" required autocomplete="current-password">
+              <button type="button" class="eye-btn" onclick="document.getElementById('loginPass').type = document.getElementById('loginPass').type === 'password' ? 'text' : 'password'">👁️</button>
+            </div>
+          </div>
+          <button type="submit" class="submit-btn">Login to SmartSpend →</button>
+        </form>
+        <div class="bottom-link">Don't have an account? <a href="/register/">Register here</a></div>
+      {% endif %}
     </div>
   </div>
 
